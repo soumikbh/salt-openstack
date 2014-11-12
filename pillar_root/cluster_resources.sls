@@ -1,8 +1,8 @@
-cluster_entities: 
-  - "compute"
+roles: 
   - "controller"
   - "network"
   - "storage"
+  - "compute"
 compute: 
   - "openstack.icehouse"
 controller: 

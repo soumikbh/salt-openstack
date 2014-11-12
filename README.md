@@ -1,165 +1,146 @@
-1. All branches except the master shall be removed
-2. Pull request to this branch should not have any changes made in pillar_root sub directory
-3. 'yaml' will be default format for sls files. This is done as maintaining sls files across format is causing mismatches and errors
-4. Support for cinder added but yet to be tested
-5. Repo will be modified in a way to enable users to use the repo directly as salt gitfs backend
-6. Support will be added to pillar file to make the project distro agnostic. New pillar files Ubuntu.sls adds configuration specific to ubuntu. The file has to be ported for each distro.
+About the project
+=================
+The [project](https://github.com/Akilesh1597/salt-openstack/ "Openstack-Automation") gives you a working OpenStack cluster in a mater of minutes. We do this using [saltstack](http://docs.saltstack.com/ "Saltstack"). There is almost no coding involved and it can be easily maintained. Above all it is as easy as talking to your servers and asking them to configure themselves. 
 
-openstack-automation
-====================
+Saltstack provides us an infrastructure management framework that makes our job easier. Saltstack supports most of tasks that you would want to perform while installing OpenStack and more. 
 
-Openstack deployment using saltstack
+A few reasons why this is cool
 
-There are several methods for automated deployment of openstack cluster. In this project we attempt to do it using [saltstack](http://docs.saltstack.com/ "Saltstack"). There is almost no coding involved and it can be easily maintained. Above all it is as easy as talking to your servers and asking them to configure themselves. 
+1. Don't just install OpenStack but also keep your installation formulae versioned, so you can always go back to the last working set.
+2. Salt formulae are not meant to just install. They can also serve to document the steps and the settings involved.
+3. OpenStack has a release cycle of 6 months and every six months you just have to tinker with a few text files to stay in the game.
+4. OpenStack has an ever increasing list of sub projects and we have an ever increasing number of formulae.
 
-Saltstack provides us an infrastructure management framework that makes our job easier. Saltstack supports most of tasks that you would want to perform while installing openstack and more. We might not need any programming to do so. All we do need to do is define our cluster as below.
+And we are opensource.
 
-<pre>
-cluster_entities: 
-  - "compute"
-  - "controller"
-  - "network"
-  - "storage"
-compute: 
-  - "compute1.juno"
-  - "compute2.juno"
-controller: 
-  - "controller.juno"
-network: 
-  - "network.juno"
-storage:
-  - "storage1.juno"
-  - "storage2.juno"
-</pre>
+What is New
+===========
+1. Branches icehouse and juno will alone exist and continue forward
+2. Repo modified to be used as git fileserver backend. User may use 'git_pillar' pointed to 'pillar_root' sub directory or download the files to use in 'roots' backend.
+3. Pull request to the project has some regulations, documented towards the end of the README.
+4. 'yaml' will be default format for sls files. This is done as maintaining sls files across format is causing mismatches and errors. Further 'json' does not go well with 'jinja' templating(formulas end up less readable).
+5. 'cluster_ops' salt module has been removed. Its functionality has been achieved using 'jinja macros', in an attempt to remove any dependencies that are not available in saltstack's list of modules.
+6. Support for cinder added. Check 'Cinder Volume' section of README.
+7. Support for all linux distros added. Check 'Packages, Services, Config files and Repositories section' of README.
+8. Partial support for 'single server single nic' installations. Check section 'Single Interface Scenario' for details.
+9. Pillar data has been segregated in multiple files according to its purpose. Check 'Customizations' section for details.
 
-What we saw above is the [pillar](http://docs.saltstack.com/topics/pillar/ "Salt Pillar") definition. Should you need to change your cluster definition you do so by changing the pillar and synchronising the changes. Although this file defines your cluster entirely the file in itself can do nothing. The entire project has been checked in [here](https://github.com/Akilesh1597/openstack-automation/ "Openstack-Automation").
+Yet to Arrive
+=============
+1. Neutron state and execution module, pilllar and formulas for creation of initial networks.
+2. Pillar and formulas for creation of instances.
 
-Please go through [salt walkthrough](http://docs.saltstack.com/en/latest/topics/tutorials/walkthrough.html "walkthrough") to understand how salt works. When you are ready to install openstack modify the [salt-master configuration](http://docs.saltstack.com/en/latest/ref/configuration/master.html "salt-master configuration") file at "/etc/salt/master" to hold the below contents.
+Getting started
+===============
+When you are ready to install OpenStack modify the [salt-master configuration](http://docs.saltstack.com/en/latest/ref/configuration/master.html "salt-master configuration") file at "/etc/salt/master" to hold the below contents.
 
 <pre>
 fileserver_backend:
   - roots
   - git
 gitfs_remotes:
-  - https://github.com/Akilesh1597/salt-openstack.git
-  - root: file_root
+  - https://github.com/Akilesh1597/salt-openstack.git:
+    root: file_root
 ext_pillar:
-  - git: juno https://github.com/Akilesh1597/salt-openstack.git root=pillar_root
+  - git: icehouse https://github.com/Akilesh1597/salt-openstack.git root=pillar_root
 jinja_trim_blocks: True
 jinja_lstrip_blocks: True
 </pre>
-This will create a new [environment](http://docs.saltstack.com/ref/file_server/index.html#environments "Salt Environments") called "juno" in your state tree. The 'file_roots' directory of the github repo will have [state definitions](http://docs.saltstack.com/topics/tutorials/starting_states.html "Salt States") in a bunch of '.sls' files and the few special directories, while the 'pillar_root' directory has your cluster definition files. 
 
-At this stage I assume that you have two machines 'controller.juno', 'network.juno', 'storage.juno', 'compute1.juno' and 'compute2.juno' (these are their hostnames as well as their minion id) added to the salt master. See [setting up salt minion](http://docs.saltstack.com/topics/tutorials/walkthrough.html#setting-up-a-salt-minion "minion setup") to add minions to the master. The pillar definition file shown at the begining has a key 'openstack_version=juno'. We will use this key to deliver commands to these machines alone like so.
+This will create a new [environment](http://docs.saltstack.com/ref/file_server/index.html#environments "Salt Environments") called "icehouse" in your state tree. The 'file_roots' directory of the github repo will have [state definitions](http://docs.saltstack.com/topics/tutorials/starting_states.html "Salt States") in a bunch of '.sls' files and the few special directories, while the 'pillar_root' directory has your cluster definition files. 
+
+At this stage I assume that you have a machine with minion id 'openstack.icehouse' and ip address '192.168.1.1' [added to the salt master](http://docs.saltstack.com/topics/tutorials/walkthrough.html#setting-up-a-salt-minion "minion setup").
+
+Lets begin...
 
 <pre>
-salt '*' saltutil.refresh_pillar
+salt-run fileserver.update
 salt '*' saltutil.sync_all
-salt -C 'I@openstack_version:juno' state.highstate
+salt -C 'I@cluster_type:icehouse' state.highstate
 </pre>
 
+This instructs the minion having 'cluster_type=icehouse' defined in its pillar data to download all the formulae defined for it and execute the same. If all goes well you can login to your newly installed OpenStack setup at 'http://192.168.1.1/horizon'. 
 
-This instructs all the minions those who have 'openstack_version=juno' defined in their pillar data to download all the state defined for them and execute the same. If all goes well you can login to your newly installed openstack setup 'http://controller.juno/horizon'.
+But that is not all. We can have a fully customized install with multiple hosts performing different roles, customized accounts and databases. All this can be done simply by manipulating the [pillar data](http://docs.saltstack.com/topics/pillar/ "Salt Pillar").
 
+Check [salt walkthrough](http://docs.saltstack.com/en/latest/topics/tutorials/walkthrough.html "walkthrough") to understand how salt works.
 
-Cluster Definition
-==================
-
-To make things clear lets have a look at a part of the pillar configuration. Our 'pillar_root' defines a 'top.sls' file with following contents.
-
+Multi node setup
+================
+Edit 'cluster_resources.sls' file inside 'pillar_root' sub directory. It looks like below.
 <pre>
-juno: 
-  "*.juno": 
-    - cluster_resources
-    - db_resources
-    - access_resources
-    - openstack_cluster
-  "os:{{ grains['os_family'] }}":
-    - match: grain
-    - "{{ grains['os_family'] }}"
-</pre>
-
-This in turn instructs all minions with ids matching the regular expression '*.juno' to use 'cluster_resources', 'db_references', 'access_resources' and 'openstack_cluster' as their pillar source. Each of these files has a set of configurations for the cluster to be deployed.
-
-cluster_resources
-=================
-Defines the 'cluster entities'(the entities that form the cluster), the hosts that perform the roles defined by these entities, and finally the formulas(sls files) that would define each of the entity. Below the excerpt.
-
-<pre>
-cluster_entities: 
+roles: 
   - "compute"
   - "controller"
   - "network"
   - "storage"
 compute: 
-  - "compute1.juno"
-  - "compute2.juno"
+  - "openstack.icehouse"
 controller: 
-  - "controller.juno"
+  - "openstack.icehouse"
 network: 
-  - "network.juno"
+  - "openstack.icehouse"
 storage:
-  - "storage1.juno"
-  - "storage2.juno"
-sls: 
-  controller: 
-    - "generics.host"
-    - "mysql"
-    - "mysql.client"
-    - "mysql.openstack_dbschema"
-    - "queue.rabbit"
-    - "keystone"
-    - "keystone.openstack_tenants"
-    - "keystone.openstack_users"
-    - "keystone.openstack_services"
-    - "nova"
-    - "horizon"
-    - "glance"
-    - "cinder"
-  network: 
-    - "generics.host"
-    - "mysql.client"
-    - "neutron"
-    - "neutron.service"
-    - "neutron.openvswitch"
-    - "neutron.ml2"
-  compute: 
-    - "generics.host"
-    - "mysql.client"
-    - "nova.compute_kvm"
-    - "neutron.openvswitch"
-    - "neutron.ml2"
-  storage:
-    - "cinder.volume"
+  - "openstack.icehouse"
 </pre>
-
-
-Adding a new cluster entity
-===========================
-
-Lets say we move the queue server as a new entity. This is how we do it.
-1. Add a new entitiy "queue_server" under "cluster_entities"
-2. Define what minions will perform the role of "queue_server"
-3. Finally define which formula deploys a "queue_server" under the "install"."queue_server" section.
+It just means that in our cluster all roles are played by a single host 'openstack.icehouse'. Now let just distribute the responsibilities.
 <pre>
-cluster_entities: 
+roles: 
+  - "compute"
+  - "controller"
+  - "network"
+  - "storage"
+compute: 
+  - "compute1.icehouse"
+  - "compute2.icehouse"
+controller: 
+  - "controller.icehouse"
+network: 
+  - "network.icehouse"
+storage:
+  - "storage.icehouse"
+</pre>
+We just added five hosts to perform different roles. "compute1.icehouse" and "compute2.icehouse" perform the role "compute" for example. Make sure the tell their ip addresses in the file 'openstack_cluster.sls'.
+<pre>
+hosts: 
+  controller.icehouse: 192.168.1.1
+  network.icehouse: 192.168.1.2
+  storage.icehouse: 192.168.1.3
+  compute1.icehouse: 192.168.1.4
+  compute2.icehouse: 192.168.1.5
+</pre>
+Lets sync up.
+<pre>
+salt-run fileserver.update
+salt '*' saltutil.sync_all
+salt -C 'I@cluster_type:icehouse' state.highstate
+</pre>
+Ah and if you use git as your backend, you have to fork us before doing any changes. 
+
+Add new roles
+=============
+Lets say we want the 'queue server' as a separate role. This is how we do it.
+1. Add a new role "queue_server" under "roles"
+2. Define what minions will perform the role of "queue_server"
+3. Finally define which formula deploys a "queue_server" under "sls" under "queue_server" section.
+<pre>
+roles: 
   - "compute"
   - "controller"
   - "network"
   - "storage"
   - "queue_server"
 compute: 
-  - "compute1.juno"
-  - "compute2.juno"
+  - "compute1.icehouse"
+  - "compute2.icehouse"
 controller: 
-  - "controller.juno"
+  - "controller.icehouse"
 network: 
-  - "network.juno"
+  - "network.icehouse"
 storage:
-  - "storage1.juno"
-  - "storage2.juno"
+  - "storage.icehouse"
 queue_server:
-  - "queueserver.juno"
+  - "queueserver.icehouse"
 sls: 
   queue_server:
     - "queue.rabbit"
@@ -167,11 +148,11 @@ sls:
     - "generics.host"
     - "mysql"
     - "mysql.client"
-    - "mysql.openstack_dbschema"
+    - "mysql.OpenStack_dbschema"
     - "keystone"
-    - "keystone.openstack_tenants"
-    - "keystone.openstack_users"
-    - "keystone.openstack_services"
+    - "keystone.OpenStack_tenants"
+    - "keystone.OpenStack_users"
+    - "keystone.OpenStack_services"
     - "nova"
     - "horizon"
     - "glance"
@@ -192,52 +173,31 @@ sls:
   storage:
     - "cinder.volume"
 </pre>
+You may want the same machine to perform many roles or you may add a new machine. Make sure to update the machine's ip address as mentioned earlier.
 
-Then sync up the cluster as shown below.
-
+Customizations
+==============
+The pillar data has been structured as below, in order have a single sls file to modify, for each kind of customization. 
 <pre>
-salt '*' saltutil.sync_all
-salt '*' saltutil.refresh_pillar
-salt -C 'I@cluster_type:openstack' state.highstate
+---------------------------------------------------------------------------------
+|Pillar File		| Purpose						|
+|:----------------------|:------------------------------------------------------|
+|OpenStack_cluster	| Generic cluster Data					| 
+|access_resources	| Keystone tenants, users, roles, services and endpoints|
+|cluster_resources	| Hosts, Roles and their correspoinding formulas	|
+|network_resources	| OpenStack Neutron data, explained below		|
+|db_resources		| Databases, Users, Passwords and Grants		|
+|deploy_files		| Arbitrary files to be deployed on all minions		|
+|misc_OpenStack_options	| Arbitrary OpenStack options and affected services	|
+|[DISTRO].sls		| Distro specific package data				|
+|[DISTRO]_repo.sls	| Distro specific repository data			|
+---------------------------------------------------------------------------------
 </pre>
+Should you need more 'tenants' or change credentials of an OpenStack user you should look into 'access_resources.sls' under 'pillar_root'. You may tweak your OpenStack in any way you want.
 
-
-Adding new compute node
-=======================
-
-Adding a new machine to a cluster is as easy as editing a json file. All you have to do is edit 'pillar/openstack_cluster.sls' as below.
-
-<pre>
-compute: 
-  - "compute1.juno"
-  - "compute2.juno"
-  - "compute3.juno"
-</pre>
-
-Then sync up the cluster as shown below.
-
-<pre>
-salt '*' saltutil.sync_all
-salt '*' saltutil.refresh_pillar
-salt -C 'I@cluster_type:openstack' state.highstate
-</pre>
-
-db_resources
-============
-Defines the databases that need to be created, along with the users and their passwords.
-
-access_resources
-================
-Defines the openstack authentication parameters, which include keystone tenants, users, their passwords, services and their endpoints.
-
-openstack_cluster
-=================
-Defines some general configuration for the cluster to be deployed. For example "pkg_proxy_url" defines the proxy server to be used to download packages. Do not define this parameter if you do not use any proxy. The hosts section defines the list of hosts on which the installation is to be carried on and their ip addresses. The presence of this section ensures that these hosts are configured in the "known hosts" file on the servers. Finally you also define the "queue" and "database" backend.
-
-
-network_resources
-=================
-Defines configuration that define the openstack ["Data" and "External" networks](http://fosskb.wordpress.com/2014/06/10/managing-openstack-internaldataexternal-network-in-one-interface/ "Openstack networking"). The default configuration will install a "gre" mode "Data" network and a "flat" mode "External" network, and looks as below.
+Neutron Networking
+==================
+'network_resources' under 'pillar_root' defines the OpenStack ["Data" and "External" networks](http://fosskb.wordpress.com/2014/06/10/managing-OpenStack-internaldataexternal-network-in-one-interface/ "Openstack networking"). The default configuration will install a "gre" mode "Data" network and a "flat" mode "External" network, and looks as below.
 
 <pre>
 neutron: 
@@ -249,7 +209,7 @@ neutron:
         External: 
           bridge: "br-ex"
           hosts:
-            network.juno: "eth3"
+            network.icehouse: "eth3"
     gre:
       tunnel_start: "1"
       tunnel_end: "1000"
@@ -266,13 +226,13 @@ neutron:
         External: 
           bridge: "br-ex"
           hosts:
-            network.juno: "eth3"
+            network.icehouse: "eth3"
     vxlan:
       tunnel_start: "1"
       tunnel_end: "1000"
 </pre>
 
-For vlan mode tenant networks, you need to add 'vlan' under 'tenant_network_types' and for each compute host and network host specify the list of [physical networks](http://fosskb.wordpress.com/2014/06/19/l2-connectivity-in-openstack-using-openvswitch-mechanism-driver/ "Openstack physical networks") and their corresponding bridge, interface and allowed vlan range.
+For vlan mode tenant networks, you need to add 'vlan' under 'tenant_network_types' and for each compute host and network host specify the list of [physical networks](http://fosskb.wordpress.com/2014/06/19/l2-connectivity-in-OpenStack-using-openvswitch-mechanism-driver/ "Openstack physical networks") and their corresponding bridge, interface and allowed vlan range.
 
 <pre>
 neutron: 
@@ -284,20 +244,50 @@ neutron:
         External: 
           bridge: "br-ex"
           hosts:
-            network.juno: "eth3"
+            network.icehouse: "eth3"
     vlan: 
       physnets: 
         Internal1: 
           bridge: "br-eth1"
           vlan_range: "100:200"
           hosts:
-            network.juno: "eth2"
-            compute1.juno: "eth2"
-            compute2.juno: "eth2"
+            network.icehouse: "eth2"
+            compute1.icehouse: "eth2"
+            compute2.icehouse: "eth2"
         Internal2:
           bridge: "br-eth2"
           vlan_range: "200:300"
           hosts:
-            network.juno: "eth4"
-            compute3.juno: "eth2"
+            network.icehouse: "eth4"
+            compute3.icehouse: "eth2"
 </pre>
+
+Single Interface Scenario
+=========================
+Most users trying OpenStack for first time would need OpenStack up and running on machine with single interface. Please set "single_nic" pillar in 'network_resources' to the 'primary interface id' in your machine. 
+
+This will connect all bridges to a bridge named 'br-proxy'. Later you have to manually add your primary nic to this bridge and configure the bridge with the ip address of your primary nic. 
+
+We have not automated the last part because you may loose connectivity to your minion at this phase and it is best you do it manually. Further setting up the briges in your 'interfaces configuration' file varies per distro. 
+
+User would have to bear with us, untill we find formula for the same. 
+
+Cinder Volume
+=============
+The 'cinder.volume' formula will find any free disk space available on the minion and create lvm partition and also a volume group 'cinder-volume'. This will be used by OpenStack's volume service. It is therefore adviced to deploy this particular formula on machines with available free space. We are using a custom state module for this purpose. Efforts are guaranteed to push the additional state to official salt state modules.
+
+Packages, Services, Config files and Repositories
+=================================================
+The 'pillar_root' sub directory contains a [DISTRO].sls file that contains package names, service names, and config file paths for each of OpenStack's component. This file is supposed to be replicated for all the distros that you plan to use on your minions. 
+
+The [DISTRO]_repo.sls that has repository details specific to each distro that house the OpenStack packages. The parameters defined in the file should be the ones that are accepted by saltstack's pkgrepo module.
+
+
+Contributing
+============
+As with all opensource projects, we need support too. However since this repo is used for deploying OpenStack clusters, it may end up making lots of changes after forking. These changes may include sensitive information in pillar. The changes may also be some trivial changes that are not necessary to be merged back here. So please follow the steps below.
+
+After forking please create a new branch, which you will use to deploy OpenStack and make changes specific to yourself. If you feel any changes are good to be maintained and carried forwad, make them in the 'original' branches and merge them to your other branches. Always pull request from the 'original' branches.
+
+As you may see the pillar data as of now only have 'Ubuntu.sls' and 'Debian.sls'. We need to update this repo with all those other distros available for OpenStack.
+
