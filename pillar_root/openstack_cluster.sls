@@ -10,10 +10,10 @@ db_engine: mysql
 #pkg_proxy_url: "http://mars:3142"
 
 #Data to identify cluster
-cluster_type: icehouse
+cluster_type: juno
 
 #Hosts and their ip addresses
 hosts: 
-  openstack.icehouse: 10.8.27.13
+  openstack.juno: 10.8.27.13
 
 

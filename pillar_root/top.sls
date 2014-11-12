@@ -1,5 +1,5 @@
-icehouse: 
-  "*.icehouse": 
+juno: 
+  "*.juno": 
     - cluster_resources
     - db_resources
     - access_resources

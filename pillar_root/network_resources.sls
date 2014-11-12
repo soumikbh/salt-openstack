@@ -13,14 +13,14 @@ neutron:
         External: 
           bridge: "br-ex"
           hosts:
-            openstack.icehouse: "eth3"
+            openstack.juno: "eth3"
     vlan: 
       physnets: 
         Internal1: 
           bridge: "br-eth1"
           vlan_range: "100:200"
           hosts:
-            openstack.icehouse: "eth2"
+            openstack.juno: "eth2"
     gre:
       tunnel_start: "1"
       tunnel_end: "1000"
