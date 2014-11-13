@@ -4,5 +4,5 @@ pkgrepo:
     - "ubuntu-cloud-keyring"
   repos:
     Juno-Cloud:
-      name: "http://ppa.launchpad.net/ubuntu-cloud-archive/juno-staging/ubuntu trusty main"
+      name: "deb http://ubuntu-cloud.archive.canonical.com/ubuntu trusty-updates/juno main"
       file: "/etc/apt/sources.list.d/cloudarchive-juno.list"
