@@ -94,10 +94,7 @@ def _autheticate(func_name):
             endpoint_type='publicURL')
         neutron_interface = client.Client(
             endpoint_url=endpoint, token=token)
-        LOG.error('calling with args ' + str(args))
-        LOG.error('calling with kwargs ' + str(nkwargs))
         return_data = func_name(neutron_interface, *args, **nkwargs)
-        LOG.error('got return data ' + str(return_data))
         if isinstance(return_data, list):
             # format list as a dict for rendering
             return {data.get('name', None) or data['id']: data
