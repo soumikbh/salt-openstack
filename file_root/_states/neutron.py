@@ -85,7 +85,7 @@ def network_present(name=None,
                                     **connection_args):
                 return _update_failed(name, 'network')
             network_arguments.update(connection_args)
-            changes_dict = network_present(network_arguments)
+            changes_dict = network_present(**network_arguments)
             changes_dict['comment'] = '{1} {0} updated'.format(name, 'network')
     return _no_change(name, 'network')
 
