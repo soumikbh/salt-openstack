@@ -75,8 +75,8 @@ def network_present(name=None,
         return _update_failed(name, 'network')
     existing_network = existing_network[name]
     for arg in network_arguments:
-        arg = arg.replace(':', '_', 1)
-        if not existing_network.get(arg, None) == network_arguments[arg]:
+        arg_i = arg.replace(':', '_', 1)
+        if not existing_network.get(arg_i, None) == network_arguments[arg]:
             LOG.debug('{0} changed to {1}'.format(arg, network_arguments[arg]))
             _neutron_module_call(
                 'delete_network', existing_network['id'], **connection_args)
