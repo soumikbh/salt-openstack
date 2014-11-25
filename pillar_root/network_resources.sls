@@ -26,10 +26,14 @@ neutron:
       tunnel_end: "1000"
   networks:
     Internal:
+      user: admin
+      tenant: admin
       subnets:
         InternalSubnet:
           cidr: '192.168.10.0/24'
     ExternalNetwork:
+      user: admin
+      tenant: admin
       provider_physical_network: External
       provider_network_type: flat
       shared: true
@@ -42,11 +46,15 @@ neutron:
           enable_dhcp: false
   routers:
     ExternalRouter:
+      user: admin
+      tenant: admin
       interfaces:
         - InternalSubnet
       external_gateway: ExternalNetwork
   security_groups:
     Default:
+      user: admin
+      tenant: admin
       description: 'Default security group'
       rules:
         - direction: ingress
