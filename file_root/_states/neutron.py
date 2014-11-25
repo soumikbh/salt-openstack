@@ -32,11 +32,12 @@ def _test_call(method):
         functionality = 'updated'
     else:
         functionality = 'removed'
+
     @wraps(method)
-    def check_for_testing(*args, **kwargs):
+    def check_for_testing(name, *args, **kwargs):
         if __opts__.get('test', None):
             return _no_change(name, resource, test=functionality)
-        return method(*args, **kwargs)
+        return method(name, *args, **kwargs)
     return check_for_testing
 
 
