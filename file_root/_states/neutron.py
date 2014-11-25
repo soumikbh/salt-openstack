@@ -15,6 +15,7 @@ Management of Neutron resources
         - provider_network_type: vlan
 '''
 import logging
+from functools import wraps
 LOG = logging.getLogger(__name__)
 
 
@@ -25,6 +26,25 @@ def __virtual__():
     return 'neutron' if 'neutron.list_networks' in __salt__ else False
 
 
+def _test_call(method):
+    (resource, functionality) = method.func_name.split('_')
+    if functionality == 'present':
+        functionality = 'updated'
+    else:
+        functionality = 'removed'
+    @wraps(method)
+    def check_for_testing(*args, **kwargs):
+        if __opts__.get('test', None):
+            return _no_change(name, resource, test=functionality)
+        return method(*args, **kwargs)
+    return check_for_testing
+
+
+def _neutron_module_call(method, *args, **kwargs):
+    return __salt__['neutron.{0}'.format(method)](*args, **kwargs)
+
+
+@_test_call
 def network_present(name=None,
                     provider_network_type=None,
                     provider_physical_network=None,
@@ -37,8 +57,6 @@ def network_present(name=None,
     name
         The name of the network to manage
     '''
-    if __opts__.get('test', None):
-        return _no_change(name, 'network', test=True)
     existing_network = _neutron_module_call(
         'list_networks', name=name, **connection_args)
     network_arguments = _get_non_null_args(
@@ -70,10 +88,6 @@ def network_present(name=None,
     return _no_change(name, 'network')
 
 
-def _neutron_module_call(method, *args, **kwargs):
-    return __salt__['neutron.{0}'.format(method)](*args, **kwargs)
-
-
 def _created(name, resource, resource_definition):
     changes_dict = {'name': name,
                     'changes': resource_definition,
@@ -88,7 +102,7 @@ def _no_change(name, resource, test=False):
                     'result': True}
     if test:
         changes_dict['comment'] = \
-            '{0} {1} will be updated'.format(resource, name)
+            '{0} {1} will be {2}'.format(resource, name, test)
     else:
         changes_dict['comment'] = \
             '{0} {1} is in correct state'.format(resource, name)
