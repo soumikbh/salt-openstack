@@ -93,6 +93,7 @@ def network_present(name=None,
             changes_dict['comment'] = '{1} {0} updated'.format(name, 'network')
             return changes_dict
         except:
+            LOG.exception('Could not update network {0}'.format(name))
             return _update_failed(name, 'network')
     return _no_change(name, 'network')
 
@@ -169,6 +170,7 @@ def subnet_present(name=None,
             changes_dict['comment'] = '{1} {0} updated'.format(name, 'subnet')
             return changes_dict
         except:
+            LOG.exception('Could not update subnet {0}'.format(name))
             return _update_failed(name, 'subnet')
     return _no_change(name, 'subnet')
 
