@@ -31,6 +31,8 @@ neutron:
       subnets:
         InternalSubnet:
           cidr: '192.168.10.0/24'
+          dns_nameservers:
+            - '8.8.8.8'
     ExternalNetwork:
       user: admin
       tenant: admin
