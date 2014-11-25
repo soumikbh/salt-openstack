@@ -199,7 +199,7 @@ def _update_failed(name, resource):
                     'changes': {},
                     'comment': '{0} {1} failed to update'.format(resource,
                                                                  name),
-                    'result': True}
+                    'result': False}
     return changes_dict
 
 
