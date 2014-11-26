@@ -87,7 +87,7 @@ def network_present(name=None,
         network_arguments = diff
         network_arguments.update(connection_args)
         try:
-            LOG.debug('updating network {0} with changes {0}'.format(
+            LOG.debug('updating network {0} with changes {1}'.format(
                 name, str(diff)))
             _neutron_module_call('update_network',
                                  existing_network[name]['id'],
@@ -153,7 +153,7 @@ def subnet_present(name=None,
         subnet_arguments = diff
         subnet_arguments.update(connection_args)
         try:
-            LOG.debug('updating subnet {0} with changes {0}'.format(
+            LOG.debug('updating subnet {0} with changes {1}'.format(
                 name, str(diff)))
             _neutron_module_call('update_subnet',
                                  existing_subnet[name]['id'],
