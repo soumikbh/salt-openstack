@@ -77,7 +77,7 @@ def network_present(name=None,
         return _update_failed(name, 'network')
     # map internal representation to display format
     LOG.error('existing ' + str(existing_network))
-    LOG.error('new ' + str(existing_network))
+    LOG.error('new ' + str(network_arguments))
     existing_network = dict((key.replace(':', '_', 1), value)
                             for key, value in
                             existing_network[name].iteritems())
