@@ -39,6 +39,7 @@ neutron:
       provider_physical_network: External
       provider_network_type: flat
       shared: true
+      admin_state_up: false
       router_external: true
       subnets:
         ExternalSubnet:
