@@ -59,7 +59,6 @@ def network_present(name=None,
     name
         The name of the network to manage
     '''
-    LOG.debug('checking existance of network {0}'.format(name))
     existing_network = _neutron_module_call(
         'list_networks', name=name, **connection_args)
     network_arguments = _get_non_null_args(
@@ -68,7 +67,6 @@ def network_present(name=None,
         provider_physical_network=provider_physical_network,
         router_external=router_external,
         shared=shared)
-    LOG.error(' got existing ' + str(existing_network))
     if not existing_network:
         network_arguments.update(connection_args)
         _neutron_module_call('create_network', **network_arguments)
@@ -89,6 +87,8 @@ def network_present(name=None,
         network_arguments = diff
         network_arguments.update(connection_args)
         try:
+            LOG.debug('updating network {0} with changes {0}'.format(
+                name, str(diff)))
             _neutron_module_call('update_network',
                                  existing_network[name]['id'],
                                  **network_arguments)
@@ -118,7 +118,6 @@ def subnet_present(name=None,
     name
         The name of the subnet to manage
     '''
-    LOG.debug('checking existance of subnet {0}'.format(name))
     existing_subnet = _neutron_module_call(
         'list_subnets', name=name, **connection_args)
     subnet_arguments = _get_non_null_args(
@@ -154,6 +153,8 @@ def subnet_present(name=None,
         subnet_arguments = diff
         subnet_arguments.update(connection_args)
         try:
+            LOG.debug('updating subnet {0} with changes {0}'.format(
+                name, str(diff)))
             _neutron_module_call('update_subnet',
                                  existing_subnet[name]['id'],
                                  **subnet_arguments)
