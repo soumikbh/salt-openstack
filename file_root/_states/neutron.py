@@ -90,7 +90,7 @@ def network_present(name=None,
             LOG.debug('updating network {0} with changes {1}'.format(
                 name, str(diff)))
             _neutron_module_call('update_network',
-                                 existing_network[name]['id'],
+                                 existing_network['id'],
                                  **network_arguments)
             changes_dict = _created(name, 'network', diff)
             changes_dict['comment'] = '{1} {0} updated'.format(name, 'network')
@@ -145,9 +145,11 @@ def subnet_present(name=None,
         if existing_subnet:
             return _created(name, 'subnet', existing_subnet[name])
         return _update_failed(name, 'subnet')
+    # change from internal representation
+    existing_subnet = existing_subnet[name]
     # create differential
     diff = dict((key, value) for key, value in subnet_arguments.iteritems()
-                if existing_subnet[name].get('key', None) != value)
+                if existing_subnet.get('key', None) != value)
     if diff:
         # update the changes
         subnet_arguments = diff.copy()
@@ -156,7 +158,7 @@ def subnet_present(name=None,
             LOG.debug('updating subnet {0} with changes {1}'.format(
                 name, str(diff)))
             _neutron_module_call('update_subnet',
-                                 existing_subnet[name]['id'],
+                                 existing_subnet['id'],
                                  **subnet_arguments)
             changes_dict = _created(name, 'subnet', diff)
             changes_dict['comment'] = '{1} {0} updated'.format(name, 'subnet')
