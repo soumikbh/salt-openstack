@@ -75,13 +75,9 @@ def network_present(name=None,
             return _created(name, 'network', existing_network[name])
         return _update_failed(name, 'network')
     # generate differential
-    diff = {}
     existing_network = existing_network[name]
-    for arg in network_arguments:
-        arg_i = arg.replace('_', ':', 1)
-        if not existing_network.get(arg_i, None) == network_arguments[arg]:
-            LOG.debug('{0} changed to {1}'.format(arg, network_arguments[arg]))
-            diff.update({arg: network_arguments[arg]})
+    diff = dict((key, value) for key, value in network_arguments.iteritems()
+                if existing_network.get(key, None) == network_arguments[key])
     if diff:
         # update the changes
         network_arguments = diff

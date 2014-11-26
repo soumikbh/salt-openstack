@@ -222,6 +222,20 @@ def update_subnet(neutron_interface, subnet_id, **subnet_params):
 
 
 @_autheticate
+def update_network(neutron_interface, network_id, **network_params):
+    '''
+    Update give network
+
+    CLI Example:
+
+    .. code-block:: bash
+
+        salt '*' neutron.update_network openstack-net-id admin_state_up=false
+    '''
+    neutron_interface.update_network(network_id, {'network': network_params})
+
+
+@_autheticate
 def update_router(neutron_interface, router_id, **router_params):
     '''
     update given router
@@ -397,8 +411,6 @@ def create_network(neutron_interface, **network_params):
         salt '*' neutron.create_network name=External
             provider_network_type=flat provider_physical_network=ext
     '''
-    network_params = {param.replace('_', ':', 1):
-                      network_params[param] for param in network_params}
     response = neutron_interface.create_network({'network': network_params})
     if 'network' in response and 'id' in response['network']:
         return response['network']['id']
