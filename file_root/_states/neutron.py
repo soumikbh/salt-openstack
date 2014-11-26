@@ -50,6 +50,7 @@ def network_present(name=None,
                     provider_network_type=None,
                     provider_physical_network=None,
                     router_external=None,
+                    admin_state_up=None,
                     shared=True,
                     **connection_args):
     '''
@@ -88,8 +89,9 @@ def network_present(name=None,
         network_arguments = diff
         network_arguments.update(connection_args)
         try:
-            _neutron_module_call(
-                'update_network', existing_network['id'], **network_arguments)
+            _neutron_module_call('update_network',
+                                 existing_network[name]['id'],
+                                 **network_arguments)
             changes_dict = _created(name, 'network', diff)
             changes_dict['comment'] = '{1} {0} updated'.format(name, 'network')
             return changes_dict
@@ -152,8 +154,9 @@ def subnet_present(name=None,
         subnet_arguments = diff
         subnet_arguments.update(connection_args)
         try:
-            _neutron_module_call(
-                'update_subnet', existing_subnet['id'], **subnet_arguments)
+            _neutron_module_call('update_subnet',
+                                 existing_subnet[name]['id'],
+                                 **subnet_arguments)
             changes_dict = _created(name, 'subnet', diff)
             changes_dict['comment'] = '{1} {0} updated'.format(name, 'subnet')
             return changes_dict
