@@ -66,6 +66,7 @@ def network_present(name=None,
         provider_physical_network=provider_physical_network,
         router_external=router_external,
         shared=shared)
+    LOG.error(' got existing ' + str(existing_network))
     if not existing_network:
         network_arguments.update(connection_args)
         _neutron_module_call('create_network', **network_arguments)
@@ -205,4 +206,4 @@ def _get_non_null_args(**kwargs):
     '''
     Return those kwargs which are not null
     '''
-    return {key: kwargs[key] for key in kwargs if kwargs[key]}  # pylint: disable=E0001
+    return dict((key, value,) for key, value in kwargs.iteritems() if value)
