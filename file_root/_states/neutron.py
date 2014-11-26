@@ -58,6 +58,7 @@ def network_present(name=None,
     name
         The name of the network to manage
     '''
+    LOG.debug('checking existance of network {0}'.format(name))
     existing_network = _neutron_module_call(
         'list_networks', name=name, **connection_args)
     network_arguments = _get_non_null_args(
@@ -75,10 +76,13 @@ def network_present(name=None,
         if existing_network:
             return _created(name, 'network', existing_network[name])
         return _update_failed(name, 'network')
+    # map internal representation to display format
+    existing_network = dict((key.replace(':', '_', 1), value)
+                            for key, value in
+                            existing_network[name].iteritems())
     # generate differential
-    existing_network = existing_network[name]
     diff = dict((key, value) for key, value in network_arguments.iteritems()
-                if existing_network.get(key, None) == network_arguments[key])
+                if existing_network.get(key, None) != value)
     if diff:
         # update the changes
         network_arguments = diff
@@ -101,8 +105,7 @@ def subnet_present(name=None,
                    cidr=None,
                    ip_version=4,
                    enable_dhcp=True,
-                   start_ip=None,
-                   end_ip=None,
+                   allocation_pools=None,
                    gateway_ip=None,
                    dns_nameservers=None,
                    host_routes=None,
@@ -113,6 +116,7 @@ def subnet_present(name=None,
     name
         The name of the subnet to manage
     '''
+    LOG.debug('checking existance of subnet {0}'.format(name))
     existing_subnet = _neutron_module_call(
         'list_subnets', name=name, **connection_args)
     subnet_arguments = _get_non_null_args(
@@ -121,8 +125,7 @@ def subnet_present(name=None,
         cidr=cidr,
         ip_version=ip_version,
         enable_dhcp=enable_dhcp,
-        start_ip=start_ip,
-        end_ip=end_ip,
+        allocation_pools=allocation_pools,
         gateway_ip=gateway_ip,
         dns_nameservers=dns_nameservers,
         host_routes=host_routes)
@@ -142,20 +145,8 @@ def subnet_present(name=None,
             return _created(name, 'subnet', existing_subnet[name])
         return _update_failed(name, 'subnet')
     # create differential
-    existing_subnet = existing_subnet[name]
-    diff = {}
-    if 'start_ip' in subnet_arguments:
-        allocation_pool = {'start': subnet_arguments.pop('start_ip'),
-                           'end': subnet_arguments.pop('end_ip', None)}
-        if allocation_pool not in existing_subnet['allocation_pools']:
-            # add given start and end ip to existing set of pools
-            existing_subnet['allocation_pools'].append(allocation_pool)
-            diff.update({'allocation_pools':
-                         existing_subnet['allocation_pools']})
-    for arg in subnet_arguments:
-        if not existing_subnet.get(arg, None) == subnet_arguments[arg]:
-            LOG.debug('{0} changed to {1}'.format(arg, subnet_arguments[arg]))
-            diff.update({arg: subnet_arguments[arg]})
+    diff = dict((key, value) for key, value in subnet_arguments.iteritems()
+                if existing_subnet[name].get('key', None) != value)
     if diff:
         # update the changes
         subnet_arguments = diff

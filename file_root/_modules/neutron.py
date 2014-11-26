@@ -400,7 +400,7 @@ def create_subnet(neutron_interface, **subnet_params):
 
 
 @_autheticate
-def create_network(neutron_interface, **network_params):
+def create_network(neutron_interface, **net_params):
     '''
     Create a new network segment in OpenStack
 
@@ -411,6 +411,12 @@ def create_network(neutron_interface, **network_params):
         salt '*' neutron.create_network name=External
             provider_network_type=flat provider_physical_network=ext
     '''
+    network_params = {}
+    for param in net_params:
+        if 'provider_' in param or 'router_' in param:
+            network_params[param.replace('_', ':', 1)] = net_params[param]
+        else:
+            network_params[param] = net_params[param]
     response = neutron_interface.create_network({'network': network_params})
     if 'network' in response and 'id' in response['network']:
         return response['network']['id']
