@@ -36,16 +36,17 @@ neutron:
     ExternalNetwork:
       user: admin
       tenant: admin
-      'provider:physical_network': External
-      'provider:network_type': flat
+      provider_physical_network: External
+      provider_network_type: flat
       shared: true
       admin_state_up: false
-      'router:external': true
+      router_external: true
       subnets:
         ExternalSubnet:
           cidr: '10.8.127.0/24'
-          start_ip: '10.8.127.10'
-          end_ip: '10.8.127.30'
+          allocation_pools:
+            - start: '10.8.127.10'
+              end: '10.8.127.30'
           enable_dhcp: false
   routers:
     ExternalRouter:
