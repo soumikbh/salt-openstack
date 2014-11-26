@@ -148,6 +148,8 @@ def subnet_present(name=None,
     # change from internal representation
     existing_subnet = existing_subnet[name]
     # create differential
+    LOG.error('existing ' + str(existing_subnet))
+    LOG.error('new ' + str(subnet_arguments))
     diff = dict((key, value) for key, value in subnet_arguments.iteritems()
                 if existing_subnet.get('key', None) != value)
     if diff:
