@@ -84,7 +84,7 @@ def network_present(name=None,
                 if existing_network.get(key, None) != value)
     if diff:
         # update the changes
-        network_arguments = diff
+        network_arguments = diff.copy()
         network_arguments.update(connection_args)
         try:
             LOG.debug('updating network {0} with changes {1}'.format(
@@ -150,7 +150,7 @@ def subnet_present(name=None,
                 if existing_subnet[name].get('key', None) != value)
     if diff:
         # update the changes
-        subnet_arguments = diff
+        subnet_arguments = diff.copy()
         subnet_arguments.update(connection_args)
         try:
             LOG.debug('updating subnet {0} with changes {1}'.format(
