@@ -51,7 +51,7 @@ def network_present(name=None,
                     provider_physical_network=None,
                     router_external=None,
                     admin_state_up=None,
-                    shared=True,
+                    shared=None,
                     **connection_args):
     '''
     Ensure that the neutron network is present with the specified properties.
@@ -154,7 +154,7 @@ def subnet_present(name=None,
     LOG.error('existing ' + str(existing_subnet))
     LOG.error('new ' + str(subnet_arguments))
     diff = dict((key, value) for key, value in subnet_arguments.iteritems()
-                if existing_subnet.get('key', None) != value)
+                if existing_subnet.get(key, None) != value)
     if diff:
         # update the changes
         subnet_arguments = diff.copy()
