@@ -28,6 +28,7 @@ neutron:
     Internal:
       user: admin
       tenant: admin
+      admin_state_up: True
       subnets:
         InternalSubnet:
           cidr: '192.168.10.0/24'
@@ -39,7 +40,7 @@ neutron:
       provider_physical_network: External
       provider_network_type: flat
       shared: true
-      admin_state_up: false
+      admin_state_up: True
       router_external: true
       subnets:
         ExternalSubnet:
