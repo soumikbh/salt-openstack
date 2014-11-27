@@ -66,6 +66,7 @@ def network_present(name=None,
         provider_network_type=provider_network_type,
         provider_physical_network=provider_physical_network,
         router_external=router_external,
+        admin_state_up=admin_state_up,
         shared=shared)
     if not existing_network:
         network_arguments.update(connection_args)
