@@ -142,4 +142,5 @@ def _get_non_null_args(**kwargs):
     '''
     Return those kwargs which are not null
     '''
-    return {key: kwargs[key] for key in kwargs if kwargs[key]}
+    return dict((key, value,) for key, value in kwargs.iteritems()
+                if value is not None)
