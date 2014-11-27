@@ -105,6 +105,19 @@ def network_present(name=None,
 
 
 @_test_call
+def network_absent(name, **connection_args):
+    existing_network = _neutron_module_call(
+        'list_networks', name=name, **connection_args)
+    if existing_network:
+        _neutron_module_call(
+            'delete_network', existing_network[name]['id'], **connection_args)
+        if _neutron_module_call('list_networks', name=name, **connection_args):
+            return _delete_failed(name, 'network')
+        return _deleted(name, 'network', existing_network[name])
+    return _absent(name, 'network')
+
+
+@_test_call
 def subnet_present(name=None,
                    network=None,
                    cidr=None,
@@ -174,6 +187,68 @@ def subnet_present(name=None,
     return _no_change(name, 'subnet')
 
 
+@_test_call
+def subnet_absent(name, **connection_args):
+    existing_subnet = _neutron_module_call(
+        'list_subnets', name=name, **connection_args)
+    if existing_subnet:
+        _neutron_module_call(
+            'delete_subnet', existing_subnet[name]['id'], **connection_args)
+        if _neutron_module_call('list_subnets', name=name, **connection_args):
+            return _delete_failed(name, 'subnet')
+        return _deleted(name, 'subnet', existing_subnet[name])
+    return _absent(name, 'subnet')
+    return _absent(name, 'network')
+
+
+@_test_call
+def router_present(name=None,
+                   gateway_network=None,
+                   interfaces=None,
+                   admin_state_up=None,
+                   **connection_args):
+    '''
+    Ensure that the neutron router is present with the specified properties.
+
+    name
+        The name of the subnet to manage
+    gateway_network
+        The network that would be the router's default gateway
+    interfaces
+        list of subnets the router attaches to
+    '''
+    existing_router = _neutron_module_call(
+        'list_routers', name=name, **connection_args)
+    if existing_router:
+        existing_router = existing_router[name]
+        diff = {}
+        if admin_state_up and existing_router['admin_state_up'] != admin_state_up:
+            diff.update({'admin_state_up': admin_state_up})
+        if gateway_network:
+            network = _neutron_module_call(
+                'list_networks', name=gateway_network, **connection_args)
+            gateway_network_id = network[gateway_network]['id']
+            if not existing_router['external_gateway_info'] :
+                if existing_router['external_gateway_info']['network_id'] != gateway_network_id:
+                    diff.update({'external_gateway_info': {'network_id': gateway_network_id}})
+            else:
+                diff.update({'external_gateway_info': {'network_id': gateway_network_id}})
+        if diff:
+            # update the changes
+            router_args = diff.copy()
+            router_args.update(connection_args)
+            try:
+                _neutron_module_call('update_router', existing_router['id'], **router_args)
+                changes_dict = _created(name, 'router', diff)
+                changes_dict['comment'] = 'Router {0} updated'.format(name)
+                return changes_dict
+            except:
+                LOG.exception('Router {0} could not be updated'.format(name))
+                return _update_failed(name, 'router')
+        return _no_change(name, 'router')
+        
+
+
 def _created(name, resource, resource_definition):
     changes_dict = {'name': name,
                     'changes': resource_definition,
@@ -192,6 +267,31 @@ def _no_change(name, resource, test=False):
     else:
         changes_dict['comment'] = \
             '{0} {1} is in correct state'.format(resource, name)
+    return changes_dict
+
+
+def _deleted(name, resource, resource_definition):
+    changes_dict = {'name': name,
+                    'changes': {},
+                    'comment': '{0} {1} removed'.format(resource, name),
+                    'result': True}
+    return changes_dict
+
+
+def _absent(name, resource):
+    changes_dict = {'name': name,
+                    'changes': {},
+                    'comment': '{0} {1} not present'.format(resource, name),
+                    'result': True}
+    return changes_dict
+
+
+def _delete_failed(name, resource):
+    changes_dict = {'name': name,
+                    'changes': {},
+                    'comment': '{0} {1} failed to delete'.format(resource,
+                                                                 name),
+                    'result': False}
     return changes_dict
 
 

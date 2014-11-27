@@ -55,7 +55,7 @@ neutron:
       tenant: admin
       interfaces:
         - InternalSubnet
-      external_gateway: ExternalNetwork
+      gateway_network: ExternalNetwork
   security_groups:
     Default:
       user: admin
