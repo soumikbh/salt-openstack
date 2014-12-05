@@ -4,13 +4,14 @@ roles:
   - "storage"
   - "compute"
 compute: 
-  - "openstack.icehouse"
+  - "jcore-cumulus18.englab.juniper.net"
+  - "jcore-cumulus19.englab.juniper.net"
 controller: 
-  - "openstack.icehouse"
+  - "jcore-cumulus17.englab.juniper.net"
 network: 
-  - "openstack.icehouse"
+  - "jcore-cumulus17.englab.juniper.net"
 storage:
-  - "openstack.icehouse"
+  - "jcore-cumulus17.englab.juniper.net"
 sls: 
   controller: 
     - "mysql"
