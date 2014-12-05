@@ -4,13 +4,14 @@ roles:
   - "storage"
   - "compute"
 compute: 
-  - "openstack.juno"
+  - "jcore-cumulus18.englab.juniper.net"
+  - "jcore-cumulus19.englab.juniper.net"
 controller: 
-  - "openstack.juno"
+  - "jcore-cumulus17.englab.juniper.net"
 network: 
-  - "openstack.juno"
+  - "jcore-cumulus17.englab.juniper.net"
 storage:
-  - "openstack.juno"
+  - "jcore-cumulus17.englab.juniper.net"
 sls: 
   controller: 
     - "mysql"
