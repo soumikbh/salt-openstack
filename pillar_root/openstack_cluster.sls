@@ -14,6 +14,8 @@ cluster_type: juno
 
 #Hosts and their ip addresses
 hosts: 
-  openstack.juno: 10.8.27.13
+ jcore-cumulus17.englab.juniper.net: 10.92.249.117
+ jcore-cumulus18.englab.juniper.net: 10.92.249.118
+ jcore-cumulus19.englab.juniper.net: 10.92.249.119
 
 
