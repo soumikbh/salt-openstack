@@ -14,8 +14,7 @@ cluster_type: juno
 
 #Hosts and their ip addresses
 hosts: 
-# jcore-cumulus17.englab.juniper.net: 10.92.249.117
- jcore-cumulus18.englab.juniper.net: 10.92.249.118
- jcore-cumulus19.englab.juniper.net: 10.92.249.119
+  controller.juno: 10.92.249.118
+  compute1.juno: 10.92.249.119
 
 
