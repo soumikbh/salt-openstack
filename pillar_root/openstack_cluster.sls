@@ -14,7 +14,4 @@ cluster_type: juno
 
 #Hosts and their ip addresses
 hosts: 
-  controller.juno: 10.92.249.118
-  compute1.juno: 10.92.249.119
-
-
+  openstack.juno: 10.92.249.119
