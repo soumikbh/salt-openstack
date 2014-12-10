@@ -4,13 +4,13 @@ roles:
   - "storage"
   - "compute"
 compute: 
-  - "compute1.juno"
+  - "openstack.juno"
 controller: 
-  - "controller.juno"
+  - "openstack.juno"
 network: 
-  - "controller.juno"
+  - "openstack.juno"
 storage:
-  - "controller.juno"
+  - "openstack.juno"
 sls: 
   controller: 
     - "mysql"
