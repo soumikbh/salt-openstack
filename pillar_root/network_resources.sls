@@ -3,7 +3,7 @@ neutron:
   metadata_secret: "414c66b22b1e7a20cc35"
   # uncomment to bridge all interfaces to primary interface
   # single_nic : primary_nic_name
-  single_nic: "eth0"
+  single_nic: "em1"
   # make sure you add eth0 to br-proxy
   # and configure br-proxy with eth0's address
   # after highstate run
@@ -13,14 +13,14 @@ neutron:
         External: 
           bridge: "br-ex"
           hosts:
-            openstack.juno: "eth3"
+            openstack.juno: "em1"
     vlan: 
       physnets: 
         Internal1: 
-          bridge: "br-eth1"
+          bridge: "br-em1"
           vlan_range: "100:200"
           hosts:
-            openstack.juno: "eth2"
+            openstack.juno: "em1"
     gre:
       tunnel_start: "1"
       tunnel_end: "1000"
